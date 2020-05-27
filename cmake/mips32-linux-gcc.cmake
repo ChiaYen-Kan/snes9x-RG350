@@ -16,7 +16,7 @@ if(NOT C_CHECK_RESULT EQUAL 0)
   if("${TOOLCHAIN_PREFIX}" STREQUAL "")
     set(TOOLCHAIN_PREFIX "/opt/${MODEL}-toolchain")
   endif()
-  set(TOOLCHAIN_BINARY_DIR "${TOOLCHAIN_PREFIX}/bin/")
+  set(TOOLCHAIN_BINARY_DIR "${TOOLCHAIN_PREFIX}/usr/bin/")
 endif()
 
 set(CMAKE_SYSTEM_PROCESSOR "mipsel")

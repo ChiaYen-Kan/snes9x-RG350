@@ -21,6 +21,8 @@
 #include <libintl.h>
 #include <sys/stat.h>
 
+#include <memory>
+
 #define _(s) gettext(s)
 
 bool s9xTerm = false;
@@ -38,6 +40,7 @@ static int enterMainMenu(int index);
 static MenuResult enterSaveStateMenu();
 static MenuResult enterLoadStateMenu();
 static MenuResult enterSettingsMenu();
+static MenuResult enterCheatsMenu();
 
 I18n i18n;
 int languageIndex = 0;
@@ -86,6 +89,7 @@ int main(int argc, char *argv[]) {
     Settings.FastSavestates = TRUE;
     Settings.DontSaveOopsSnapshot = TRUE;
     Settings.AutoSaveDelay = 5;
+    Settings.ApplyCheats = TRUE;
 #if 0
     Settings.MaxSpriteTilesPerLine = 34;
     Settings.OneClockCycle = 3;
@@ -102,7 +106,6 @@ int main(int argc, char *argv[]) {
     S9xLoadConfigFiles(argv, argc);
     const char *romfn = S9xParseArgs(argv, argc);
     if (romfn) strncpy(romFilename, romfn, PATH_MAX + 1);
-    S9xDeleteCheats();
 
     MakeS9xDirs();
 
@@ -200,9 +203,12 @@ int main(int argc, char *argv[]) {
     NSRTControllerSetup();
     Memory.LoadSRAM(S9xGetFilename(".srm", SRAM_DIR));
 
-    if (Settings.ApplyCheats)
-    {
-        S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+    if (Settings.ApplyCheats) {
+        if (S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR))) {
+            for (size_t i = 0; i < Cheat.g.size(); i++) {
+                S9xDisableCheatGroup(i);
+            }
+        }
     }
 
     S9xParseArgsForCheats(argv, argc);
@@ -461,6 +467,8 @@ static int enterMainMenu(int index) {
           [](const MenuItem*)->MenuResult { return enterLoadStateMenu(); } },
         { MIT_CLICK, NULL, _("Settings"), 0, 0,
           [](const MenuItem*)->MenuResult { return enterSettingsMenu(); } },
+        { MIT_CLICK, NULL, _("Cheat"), 0, 0,
+          [](const MenuItem*)->MenuResult { return enterCheatsMenu(); } },
         { MIT_CLICK, NULL, _("Reset"), 0, 0,
           [](const MenuItem*)->MenuResult { S9xReset(); return MR_LEAVE; } },
         { MIT_INT32, &languageIndex, _("Language"), 0, (int)i18n.getList().size() - 1,
@@ -561,3 +569,37 @@ static MenuResult enterSettingsMenu() {
     if (MenuRun(items, 70, 230, 80, 0, 0) == MR_LEAVE) return MR_LEAVE;
     return MR_NONE;
 }
+
+static MenuResult enterCheatsMenu() {
+    MenuItem *menus = new MenuItem[Cheat.g.size() + 1];
+    std::unique_ptr<MenuItem> menusPtr(menus);
+
+    memset(menus, 0, sizeof(MenuItem) * (Cheat.g.size() + 1));
+    menus[Cheat.g.size()].type = MIT_END;
+
+    for (size_t i = 0; i < Cheat.g.size(); i++) {
+        menus[i].type = MIT_BOOL8;
+        menus[i].value = &Cheat.g[i].enabled;
+        menus[i].text = Cheat.g[i].name;
+        menus[i].valMin = 0;
+        menus[i].valMax = 0;
+        menus[i].triggerFunc = [](const MenuItem *item) -> MenuResult {
+            size_t index = (size_t)item->customData;
+            if (Cheat.g[index].enabled) {
+                S9xEnableCheatGroup(index);
+            }
+            else {
+                S9xDisableCheatGroup(index);
+            }
+            return MR_NONE;
+        };
+        menus[i].drawFunc = NULL;
+        menus[i].valueFunc = NULL;
+        menus[i].customData = (void *)(i);
+    }
+
+    if (MenuRun(menus, 70, 230, 80, 0, 0) == MR_LEAVE) return MR_LEAVE;
+
+    return MR_NONE;
+}
+

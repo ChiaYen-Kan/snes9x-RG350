@@ -91,3 +91,7 @@ msgstr "关"
 #: sdl/video.cpp:213
 msgid "/usr/share/fonts/dejavu/DejaVuSansMono.ttf|/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 msgstr "/usr/share/fonts/dejavu/DejaVuSansMono.ttf|/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf|/usr/share/gmenu2x/skins/Default/fonts/SourceHanSans-Regular-04.ttf"
+
+#: sdl/main.cpp:465
+msgid "Cheat"
+msgstr "金手指"

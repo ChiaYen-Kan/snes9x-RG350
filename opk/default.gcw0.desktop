@@ -1,8 +1,6 @@
 [Desktop Entry]
-Name=Snes9x 1.60
+Name=Snes9x-RG350
 Comment=Super Nintendo emulator
-Comment[fr]=Émulateur de Super Nintendo
-Comment[es]=Emulador de Super Nintendo
 Exec=snes9x %f
 Terminal=false
 Type=Application

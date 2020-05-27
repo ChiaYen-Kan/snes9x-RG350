@@ -202,8 +202,8 @@ void S9xLoadConfigFiles (char **argv, int argc)
 
 	Settings.ForceInterleaved2          =  conf.GetBool("ROM::Interleaved2",                   false);
 	Settings.ForceInterleaveGD24        =  conf.GetBool("ROM::InterleaveGD24",                 false);
-	Settings.ApplyCheats                =  conf.GetBool("ROM::Cheat",                          false);
-	Cheat.enabled = false;
+	Settings.ApplyCheats                =  conf.GetBool("ROM::Cheat",                          true);
+	Cheat.enabled = true;
 	Settings.NoPatch                    = !conf.GetBool("ROM::Patch",                          true);
 	Settings.IgnorePatchChecksum        =  conf.GetBool("ROM::IgnorePatchChecksum",            false);
 

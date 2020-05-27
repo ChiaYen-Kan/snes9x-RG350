@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
-if("${MODEL}" MATCHES "gcw0")
+if("${MODEL}" MATCHES "rg350")
   set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/cmake/mips32-linux-gcc.cmake")
   set(PROFILE_GEN_DIR "/media/data/profile/snes9x")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libstdc++ -static-libgcc")
 else()
   set(PROFILE_GEN_DIR "./profile/snes9x")
 endif()
